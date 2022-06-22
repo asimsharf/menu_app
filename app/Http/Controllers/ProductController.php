@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use URL;
 
 class ProductController extends Controller
 {
@@ -14,13 +15,40 @@ class ProductController extends Controller
      */
     public function index()
     {
+
         try {
-            $product = Product::with(['category'])->get();
-           
-            return $this->success(1,  $product);
+            $products = Product::with('category')->get();
+
+            $product_list = [];
+            foreach( $products as $product){
+                $product_list[] = [
+                    'id'=> $product->id,
+                    'name'=> [
+                        'ar'=> $product->ar_name,
+                        'en'=> $product->en_name,
+                    ],
+                    'description'=> [
+                        'ar'=> $product->ar_description,
+                        'en'=> $product->en_description,
+                    ],
+                    'price'=> $product->price,
+                    'calories'=> $product->calories,
+                    "image"=> URL::to('/images/product/'. $product->image),
+                    'category'=>[
+                        'id'=> $product->category->id,
+                        'name'=> [
+                            'ar'=> $product->category->ar_name,
+                            'en'=> $product->category->en_name,
+                        ],
+                        "image"=> URL::to('/images/category/'. $product->category->image),
+                    ],
+                ];
+            }
+
+            return $this->success($product_list, 'all products');
         } catch (\Exception $e) {
             if ($e->getCode() == 23000) {
-                return $this->error(2, 'Duplicate Exception ');
+                return $this->error($e);
             }
         }
     }
@@ -43,23 +71,43 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+       
         try {
+            $request->validate([
+                'ar_name'=>'required',
+                'en_name'=>'required',
+                'ar_description'=>'required',
+                'en_description'=>'required',
+                'price'=>'required',
+                'calories'=>'required',
+                'image'=>'required|mimes:jpg,png,jpeg|max:5048',
+                'category_id'=>'required',
+            ]);
+          
+            $image_name = time() .  '.' . $request->image->extension();
+
+            $request->image->move(public_path('images/product'), $image_name);
+
             $product = new Product();
 
-            $product->name = $request->name;
+
+            $product->ar_name = $request->ar_name;
+            $product->en_name = $request->en_name;
+            $product->ar_description = $request->ar_description;
+            $product->en_description = $request->en_description;
             $product->price = $request->price;
-            $product->description = $request->description;
+            $product->calories = $request->calories;
+            $product->image = $image_name;
             $product->category_id = $request->category_id;
-           
+
             if($product->save()){
-                return $this->success(1,  $product);
+                return $this->success($product, "Product has been created");
             }else{
-                return $this->error(0,'can not create pro$product');
+                return $this->error('Product has not been created');
             }
         } catch (\Exception $e) {
-            
             if ($e->getCode() == 23000) {
-                return $this->error(2, 'Duplicate Exception ');
+                return $this->error($e);
             }
         }
     }
@@ -93,24 +141,47 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,  $id)
+    public function update(Request $request, $id)
     {
         try {
+            
+            $request->validate([
+                'ar_name'=>'required',
+                'en_name'=>'required',
+                'ar_description'=>'required',
+                'en_description'=>'required',
+                'price'=>'required',
+                'calories'=>'required',
+                'image'=>'required|mimes:jpg,png,jpeg|max:5048',
+                'category_id'=>'required',
+            ]);
+          
+            $image_name = time() .  '.' . $request->image->extension();
+
+            $request->image->move(public_path('images/product'), $image_name);
+
             $product =  Product::find($id);
 
-            $product->name = $request->name;
+
+            unlink(public_path('/images/product/'. $product->image));
+
+            $product->ar_name = $request->ar_name;
+            $product->en_name = $request->en_name;
+            $product->ar_description = $request->ar_description;
+            $product->en_description = $request->en_description;
             $product->price = $request->price;
-            $product->description = $request->description;
+            $product->calories = $request->calories;
+            $product->image = $image_name;
             $product->category_id = $request->category_id;
            
             if($product->update()){
-                return $this->success(1,  $product);
+                return $this->success( $product, "Product has been updated");
             }else{
-                return $this->error(0,'can not update product');
+                return $this->error("Product has not been updated");
             }
         } catch (\Exception $e) {
             if ($e->getCode() == 23000) {
-                return $this->error(2, 'Duplicate Exception ');
+                return $this->error($e);
             }
         }
     }
@@ -126,14 +197,16 @@ class ProductController extends Controller
         try {
             $product =  Product::find($id);
 
+            unlink(public_path('/images/product/'. $product->image));
+
             if($product->delete()){
-                return $this->done(1,  'Successfully product deleted');
+                return $this->success('Successfully product deleted');
             }else{
-                return $this->error(0,'Can\'t remove this product');
+                return $this->error('Can\'t remove this product');
             }
         } catch (\Exception $e) {
             if ($e->getCode() == 23000) {
-                return $this->error(2, 'Duplicate Exception ');
+                return $this->error($e);
             }
         }
     }
