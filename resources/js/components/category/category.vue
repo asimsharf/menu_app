@@ -94,6 +94,7 @@
 
                   <th style="width: 20%">Product No</th>
                   <th style="width: 80px">Image</th>
+                  <th style="width: 80px">#</th>
                 </tr>
               </thead>
               <tbody>
@@ -101,9 +102,23 @@
                   <td>{{ category.id }}</td>
                   <td>{{ category.name.ar }}</td>
                   <td>
-                    <span class="badge bg-success">{{ category.products.length }} Products</span>
+
+
+                    <!-- <router-link to="/category_product"> -->
+                    <span @click="categoryProduct(category)" class="badge bg-success">{{ category.products.length }}
+                      Products</span>
+                    <!-- </router-link> -->
                   </td>
                   <td><img class="direct-chat-img" :src="category.image" /></td>
+                  <td>
+                    <span class="badge bg-primary" @click="updateCategory(category.id)">
+                      <i class="fas fa-edit"></i>
+                    </span>
+                    <div style="border-left:1px solid #000;height:15px"></div>
+                    <span class="badge bg-danger" @click="deleteCategory(category.id)">
+                      <i class="fas fa-trash"></i>
+                    </span>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -140,65 +155,69 @@ export default {
   methods: {
 
     onFileSelected(event) {
-      let file = event.target.files[0];
-
-      if (file.size > 1048770) {
-        console.log("image_validation")
-      } else {
-        let reader = new FileReader();
-        reader.onload = event => {
-          console.log(event.target.result);
-          this.form.image = event.target.result
-        };
-        reader.readAsDataURL(file);
-
-      }
-
+      this.form.image = event.target.files[0];
     },
 
     postCategory() {
-      axios.post("/api/category", this.form)
-        .then((data) => {
-          console.log(data);
-          if (data.status == "success") {
+
+      const formData = new FormData();
+
+      formData.append('en_name', this.form.er_name);
+      formData.append('ar_name', this.form.ar_name);
+      formData.append('image', this.form.image, this.form.image.name);
+
+      axios.post("/api/category", formData)
+        .then(res => {
+          if (res.data.status == "success") {
             this.getCategory();
           }
         })
-        .catch((error) => (console.error(error)));
+        .catch(error => console.error(error));
     },
 
     getCategory() {
       axios.get("/api/category")
-        .then(({ data }) => {
-          console.log(data);
-          if (data.status == "success") {
-            this.categories = data.data;
+        .then(res => {
+          if (res.data.status == "success") {
+            this.categories = res.data.data;
           }
         })
-        .catch();
+        .catch(error => console.error(error));
     },
 
     deleteCategory(id) {
       axios.delete("/api/category/" + id)
-        .then(() => {
-          this.categories = this.categories.filter((category) => {
-            return category.id != id;
-          });
+        .then(res => {
+          if (res.data.status == "success") {
+            this.categories = this.categories.filter((category) => {
+              return category.id != id;
+            });
+            this.getCategory();
+          }
+
         })
-        .catch(() => console.error("catch error"));
+        .catch(error => console.error(error));
     },
 
     updateCategory() {
       let id = this.$route.params.id
       axios.patch('/api/category/' + id, this.form)
-        .then((data) => {
+        .then(res => {
           console.log(data);
           if (data.status == "success") {
             console.log("Category has been updated Successfully");
           }
         })
-        .catch(error => this.errors = error.response.data.errors)
+        .catch(error => console.error(error));
     },
+
+    categoryProduct(category) {
+
+      this.$router.push({
+        name: 'category_product',
+        params: { id: category.id, ar_name: category.name.ar, en_name: category.name.en },
+      });
+    }
 
   },
 

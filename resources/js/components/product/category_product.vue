@@ -5,11 +5,15 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Products Page</h1>
+                        <h1 class="m-0">{{this.$route.params.ar_name}}</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item">
+                                <router-link to="/category">
+                                    <a >Category</a>
+                                </router-link>
+                            </li>
                             <li class="breadcrumb-item active">Products</li>
                         </ol>
                     </div>
@@ -78,27 +82,14 @@
                                         </div>
                                     </div>
 
-
-                                    <div class="form-group col-md-3">
-                                        <label for="category_id">Category</label>
-                                        <select v-model="form.category_id" id="category_id" class="form-control custom-select">
-                                            <option disabled selected>Select Category</option>
-                                            <option v-for="category in categories" :value="category.id">
-                                            {{ category.name.en }}
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-
-
                                     <div class="form-group col-md-6">
 
                                         <div class="image_preview"
                                             :style="{ 'background-image': `url(${form.image})` }"></div>
                                     </div>
+
                                 </div>
+
 
                                 <button type="submit" class="btn btn-primary">Save</button>
                             </form>
@@ -145,7 +136,7 @@
                                     <td>{{ product.price }} S.R</td>
                                     <td>{{ product.calories }} kcl</td>
                                     <td>
-                                        <span class="badge bg-success">{{ product.category.name.en }} Products </span>
+                                        <span class="badge bg-success">{{ product.category.name.en }} </span>
                                     </td>
                                     <td><img class="direct-chat-img" :src="product.image" /></td>
                                     <td>
@@ -174,8 +165,8 @@
 
 export default {
     created() {
+       
         this.getProduct();
-        this.getCategory();
     },
     data() {
         return {
@@ -187,7 +178,6 @@ export default {
                 price: null,
                 calories: null,
                 image: null,
-                category_id: null,
             },
             errors: {},
 
@@ -214,7 +204,7 @@ export default {
             formData.append('price', this.form.price);
             formData.append('calories', this.form.calories);
             formData.append('image', this.form.image, this.form.image.name);
-            formData.append('category_id', this.form.category_id);
+            formData.append('category_id', this.$route.params.id);
 
             axios.post("/api/product", formData)
                 .then(res => {
@@ -226,7 +216,8 @@ export default {
         },
 
         getProduct() {
-            axios.get("/api/product")
+
+            axios.get("/api/category_product/" + this.$route.params.id)
                 .then(res => {
                     if (res.data.status == "success") {
                         this.products = res.data.data;
@@ -256,16 +247,6 @@ export default {
                     console.log(data);
                     if (data.status == "success") {
                         console.log("Product has been updated Successfully");
-                    }
-                })
-                .catch(error => console.error(error));
-        },
-
-        getCategory() {
-            axios.get("/api/category")
-                .then(res => {
-                    if (res.data.status == "success") {
-                        this.categories = res.data.data;
                     }
                 })
                 .catch(error => console.error(error));

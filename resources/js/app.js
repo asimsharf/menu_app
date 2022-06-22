@@ -11,6 +11,7 @@ import Login from './components/auth/login.vue';
 import Register from './components/auth/register.vue';
 import Category from './components/category/category.vue';
 import Product from './components/product/product.vue';
+import CategoryProduct from './components/product/category_product.vue'
 
 const routes = [
     { path: '/', component: Home },
@@ -19,6 +20,7 @@ const routes = [
     { path: '/register', component: Register },
     { path: '/category', component: Category },
     { path: '/product', component: Product },
+    { path: '/category_product', name: 'category_product', component: CategoryProduct}
 
 ];
 

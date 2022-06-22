@@ -73,7 +73,7 @@
                             </div>
                         </form>
                     </div>
-                </li>
+                </li>   
 
                 <!-- Messages Dropdown Menu -->
                 <li class="nav-item dropdown">

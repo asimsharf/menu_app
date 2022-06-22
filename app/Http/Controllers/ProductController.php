@@ -20,27 +20,67 @@ class ProductController extends Controller
             $products = Product::with('category')->get();
 
             $product_list = [];
-            foreach( $products as $product){
+            foreach ($products as $product) {
                 $product_list[] = [
-                    'id'=> $product->id,
-                    'name'=> [
-                        'ar'=> $product->ar_name,
-                        'en'=> $product->en_name,
+                    'id' => $product->id,
+                    'name' => [
+                        'ar' => $product->ar_name,
+                        'en' => $product->en_name,
                     ],
-                    'description'=> [
-                        'ar'=> $product->ar_description,
-                        'en'=> $product->en_description,
+                    'description' => [
+                        'ar' => $product->ar_description,
+                        'en' => $product->en_description,
                     ],
-                    'price'=> $product->price,
-                    'calories'=> $product->calories,
-                    "image"=> URL::to('/images/product/'. $product->image),
-                    'category'=>[
-                        'id'=> $product->category->id,
-                        'name'=> [
-                            'ar'=> $product->category->ar_name,
-                            'en'=> $product->category->en_name,
+                    'price' => $product->price,
+                    'calories' => $product->calories,
+                    "image" => URL::to('/images/product/' . $product->image),
+                    'category' => [
+                        'id' => $product->category->id,
+                        'name' => [
+                            'ar' => $product->category->ar_name,
+                            'en' => $product->category->en_name,
                         ],
-                        "image"=> URL::to('/images/category/'. $product->category->image),
+                        "image" => URL::to('/images/category/' . $product->category->image),
+                    ],
+                ];
+            }
+
+            return $this->success($product_list, 'all products');
+        } catch (\Exception $e) {
+            if ($e->getCode() == 23000) {
+                return $this->error($e);
+            }
+        }
+    }
+
+    public function category_product($id)
+    {
+
+        try {
+            $products = Product::where('category_id', $id)->with('category')->get();
+
+            $product_list = [];
+            foreach ($products as $product) {
+                $product_list[] = [
+                    'id' => $product->id,
+                    'name' => [
+                        'ar' => $product->ar_name,
+                        'en' => $product->en_name,
+                    ],
+                    'description' => [
+                        'ar' => $product->ar_description,
+                        'en' => $product->en_description,
+                    ],
+                    'price' => $product->price,
+                    'calories' => $product->calories,
+                    "image" => URL::to('/images/product/' . $product->image),
+                    'category' => [
+                        'id' => $product->category->id,
+                        'name' => [
+                            'ar' => $product->category->ar_name,
+                            'en' => $product->category->en_name,
+                        ],
+                        "image" => URL::to('/images/category/' . $product->category->image),
                     ],
                 ];
             }
@@ -71,19 +111,19 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-       
+
         try {
             $request->validate([
-                'ar_name'=>'required',
-                'en_name'=>'required',
-                'ar_description'=>'required',
-                'en_description'=>'required',
-                'price'=>'required',
-                'calories'=>'required',
-                'image'=>'required|mimes:jpg,png,jpeg|max:5048',
-                'category_id'=>'required',
+                'ar_name' => 'required',
+                'en_name' => 'required',
+                'ar_description' => 'required',
+                'en_description' => 'required',
+                'price' => 'required',
+                'calories' => 'required',
+                'image' => 'required|mimes:jpg,png,jpeg|max:5048',
+                'category_id' => 'required',
             ]);
-          
+
             $image_name = time() .  '.' . $request->image->extension();
 
             $request->image->move(public_path('images/product'), $image_name);
@@ -100,9 +140,9 @@ class ProductController extends Controller
             $product->image = $image_name;
             $product->category_id = $request->category_id;
 
-            if($product->save()){
+            if ($product->save()) {
                 return $this->success($product, "Product has been created");
-            }else{
+            } else {
                 return $this->error('Product has not been created');
             }
         } catch (\Exception $e) {
@@ -144,18 +184,18 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            
+
             $request->validate([
-                'ar_name'=>'required',
-                'en_name'=>'required',
-                'ar_description'=>'required',
-                'en_description'=>'required',
-                'price'=>'required',
-                'calories'=>'required',
-                'image'=>'required|mimes:jpg,png,jpeg|max:5048',
-                'category_id'=>'required',
+                'ar_name' => 'required',
+                'en_name' => 'required',
+                'ar_description' => 'required',
+                'en_description' => 'required',
+                'price' => 'required',
+                'calories' => 'required',
+                'image' => 'required|mimes:jpg,png,jpeg|max:5048',
+                'category_id' => 'required',
             ]);
-          
+
             $image_name = time() .  '.' . $request->image->extension();
 
             $request->image->move(public_path('images/product'), $image_name);
@@ -163,7 +203,7 @@ class ProductController extends Controller
             $product =  Product::find($id);
 
 
-            unlink(public_path('/images/product/'. $product->image));
+            unlink(public_path('/images/product/' . $product->image));
 
             $product->ar_name = $request->ar_name;
             $product->en_name = $request->en_name;
@@ -173,10 +213,10 @@ class ProductController extends Controller
             $product->calories = $request->calories;
             $product->image = $image_name;
             $product->category_id = $request->category_id;
-           
-            if($product->update()){
-                return $this->success( $product, "Product has been updated");
-            }else{
+
+            if ($product->update()) {
+                return $this->success($product, "Product has been updated");
+            } else {
                 return $this->error("Product has not been updated");
             }
         } catch (\Exception $e) {
@@ -197,11 +237,11 @@ class ProductController extends Controller
         try {
             $product =  Product::find($id);
 
-            unlink(public_path('/images/product/'. $product->image));
+            unlink(public_path('/images/product/' . $product->image));
 
-            if($product->delete()){
+            if ($product->delete()) {
                 return $this->success('Successfully product deleted');
-            }else{
+            } else {
                 return $this->error('Can\'t remove this product');
             }
         } catch (\Exception $e) {
