@@ -1,236 +1,350 @@
 <template>
-  <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <div class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0">Categories Page</h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Categories</li>
-            </ol>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- /.content-header -->
+    <div class="content-wrapper">
 
-    <!-- Main content -->
-    <div class="content">
-      <div class="container-fluid">
-        <!-- ################################ -->
-        <div class="col-md-12">
-          <div class="card card-primary collapsed-card">
-            <div class="card-header">
-              <h3 class="card-title">Create a new Category here</h3>
-
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>
-            </div>
-
-            <div class="card-body">
-              <form @submit.prevent="postCategory" enctype="multipart/form-data">
-                <div class="row">
-                  <div class="form-group col-md-6">
-                    <label for="ar_name">Arabic Name</label>
-                    <input v-model="form.ar_name" type="text" id="ar_name" class="form-control" />
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for="en_name">English Name</label>
-                    <input v-model="form.en_name" type="text" id="en_name" class="form-control" />
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="form-group col-md-6">
-                    <label for="image">Category image</label>
-                    <div class="custom-file">
-                      <input type="file" class="custom-file-input" id="image" @change="onFileSelected" />
-                      <label class="custom-file-label" for="image"></label>
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0">Categories Page</h1>
                     </div>
-                  </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item active">Categories</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                  <div class="form-group col-md-6">
+        <div class="content">
+            <div class="container-fluid">
 
-                    <div class="image_preview" :style="{ 'background-image': `url(${form.image})` }"></div>
-                  </div>
+                <div class="col-md-12">
+                    <div class="card card-primary collapsed-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Create a new Category here</h3>
+
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+
+                            <form @submit.prevent="postCategory" enctype="multipart/form-data">
+                                <div class="row">
+
+                                    <div class="form-group col-md-6">
+                                        <label for="ar_name">Arabic Name</label>
+                                        <input v-model="form.ar_name" type="text" id="ar_name" class="form-control" />
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label for="en_name">English Name</label>
+                                        <input v-model="form.en_name" type="text" id="en_name" class="form-control" />
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group col-md-12">
+                                            <label for="image">Product image</label>
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" id="image"
+                                                    @change="onFileSelected" />
+                                                <label class="custom-file-label" for="image">
+                                                    {{ form.image.name }}
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group col-md-12">
+
+                                            <img :src="image_preview"
+                                                style="max-width: 100%;max-height:100%;height: 75px;width: 75px;">
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Save</button>
-              </form>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Categories table</h3>
+
+                        <div class="card-tools">
+                            <ul class="pagination pagination-sm float-right">
+                                <li class="page-item"><a class="page-link" href="#">«</a></li>
+                                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">»</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-0">
+                        <table class="table">
+
+                            <thead>
+                                <tr>
+                                    <th style="width: 10px">#</th>
+                                    <th>Category name</th>
+
+                                    <th style="width: 20%">Product No</th>
+                                    <th style="width: 80px">Image</th>
+                                    <th style="width: 80px">#</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <div v-if="isLoading" class="loader"></div>
+                                <tr v-if="!isLoading" v-for="category in categories" :key="category.id">
+                                    <td>{{ category.id }}</td>
+                                    <td>{{ category.name.ar }}</td>
+                                    <td>
+                                        <span @click="categoryProduct(category)" class="badge bg-success">{{
+                                                category.products.length
+                                        }}
+                                            Products</span>
+                                    </td>
+                                    <td><img class="direct-chat-img" :src="category.image" /></td>
+                                    <td>
+                                        <span @click="setCategory(category)" class="badge bg-primary"
+                                            data-toggle="modal" data-target="#modal-category">
+                                            <i class="fas fa-edit"></i>
+                                        </span>
+                                        <div style="border-left:1px solid #000;height:15px"></div>
+                                        <span class="badge bg-danger" @click="deleteCategory(category.id)">
+                                            <i class="fas fa-trash"></i>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-        <!-- ################################ -->
 
-        <!-- **************************** -->
-        <div class="card">
-          <div class="card-header">
-            <h3 class="card-title">Categories table</h3>
 
-            <div class="card-tools">
-              <ul class="pagination pagination-sm float-right">
-                <li class="page-item"><a class="page-link" href="#">«</a></li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">»</a></li>
-              </ul>
+        <div class="modal fade show" id="modal-category" style="display: none; padding-right: 15px;" aria-modal="true"
+            role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Update Category</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <form @submit.prevent="updateCategory()" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <label for="ar_name">Arabic Name </label>
+                                    <input v-model="form.ar_name" type="text" id="ar_name" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="en_name">English Name</label>
+                                    <input v-model="form.en_name" type="text" id="en_name" class="form-control" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="image">Product image</label>
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="image"
+                                            @change="onFileSelected" />
+                                        <label class="custom-file-label" for="image">
+                                            {{ form.image.name }}
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <img :src="image_preview"
+                                        style="max-width: 100%;max-height:100%;height:100px;width: 100%;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-          </div>
-          <!-- /.card-header -->
-          <div class="card-body p-0">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th style="width: 10px">#</th>
-                  <th>Category name</th>
-
-                  <th style="width: 20%">Product No</th>
-                  <th style="width: 80px">Image</th>
-                  <th style="width: 80px">#</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="category in categories" :key="category.id">
-                  <td>{{ category.id }}</td>
-                  <td>{{ category.name.ar }}</td>
-                  <td>
-
-
-                    <!-- <router-link to="/category_product"> -->
-                    <span @click="categoryProduct(category)" class="badge bg-success">{{ category.products.length }}
-                      Products</span>
-                    <!-- </router-link> -->
-                  </td>
-                  <td><img class="direct-chat-img" :src="category.image" /></td>
-                  <td>
-                    <span class="badge bg-primary" @click="updateCategory(category.id)">
-                      <i class="fas fa-edit"></i>
-                    </span>
-                    <div style="border-left:1px solid #000;height:15px"></div>
-                    <span class="badge bg-danger" @click="deleteCategory(category.id)">
-                      <i class="fas fa-trash"></i>
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <!-- /.card-body -->
         </div>
-        <!-- **************************** -->
-      </div>
     </div>
-    <!-- /.content -->
-  </div>
 </template>
 
 <script>
 
 export default {
-  created() {
-    this.getCategory();
-  },
-  data() {
-    return {
-      form: {
-        en_name: null,
-        ar_name: null,
-        image: null,
-      },
-      errors: {},
-
-      categories: [],
-
-    };
-  },
-
-  methods: {
-
-    onFileSelected(event) {
-      this.form.image = event.target.files[0];
+    created() {
+        this.getCategory();
     },
 
-    postCategory() {
+    data() {
+        return {
+            form: {
+                en_name: null,
+                ar_name: null,
+                image: File,
+            },
+            image_preview: null,
+            errors: {},
+            categories: [],
+            categoryID: null,
+            isLoading: false,
 
-      const formData = new FormData();
-
-      formData.append('en_name', this.form.er_name);
-      formData.append('ar_name', this.form.ar_name);
-      formData.append('image', this.form.image, this.form.image.name);
-
-      axios.post("/api/category", formData)
-        .then(res => {
-          if (res.data.status == "success") {
-            this.getCategory();
-          }
-        })
-        .catch(error => console.error(error));
+        };
     },
 
-    getCategory() {
-      axios.get("/api/category")
-        .then(res => {
-          if (res.data.status == "success") {
-            this.categories = res.data.data;
-          }
-        })
-        .catch(error => console.error(error));
-    },
+    methods: {
+        setCategory(category) {
+            this.categoryID = category.id;
+            this.form.ar_name = category.name.ar;
+            this.form.en_name = category.name.en;
+            this.image_preview = category.image;
+        },
 
-    deleteCategory(id) {
-      axios.delete("/api/category/" + id)
-        .then(res => {
-          if (res.data.status == "success") {
-            this.categories = this.categories.filter((category) => {
-              return category.id != id;
+        onFileSelected(event) {
+            let file = event.target.files[0];
+            let reader = new FileReader();
+
+            this.form.image = file;
+
+            if (file.size > 1048770) {
+                return;
+            } else {
+                reader.onload = event => {
+                    this.image_preview = event.target.result
+                };
+                reader.readAsDataURL(file);
+            }
+
+        },
+
+        postCategory() {
+
+            const formData = new FormData();
+
+            formData.append('en_name', this.form.en_name);
+            formData.append('ar_name', this.form.ar_name);
+            formData.append('image', this.form.image, this.form.image.name);
+
+            axios.post("/api/category", formData)
+                .then(res => {
+                    if (res.data.status == "success") {
+                        this.getCategory();
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Category has been created successfully'
+                        })
+                    }
+                })
+                .catch(error => console.error(error)).catch(Toast.fire({
+                    icon: 'warning',
+                    title: 'Category has not been created successfully'
+                }));
+        },
+
+        getCategory() {
+            this.isLoading = true;
+            axios.get("/api/category")
+                .then(res => {
+                    this.isLoading = false;
+                    if (res.data.status == "success") {
+                        this.categories = res.data.data;
+                    }
+                })
+                .catch(error => console.error(error));
+        },
+
+        deleteCategory(id) {
+            axios.delete("/api/category/" + id)
+                .then(res => {
+                    if (res.data.status == "success") {
+                        this.categories = this.categories.filter((category) => {
+                            return category.id != id;
+                        });
+                        this.getCategory();
+
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Category has been removed successfully'
+                        })
+                    }
+
+                })
+                .catch(error => console.error(error)).catch(Toast.fire({
+                    icon: 'warning',
+                    title: 'Category has not been removed successfully'
+                }));
+        },
+
+        updateCategory() {
+
+            const formData = new FormData();
+
+            formData.append('en_name', this.form.en_name);
+            formData.append('ar_name', this.form.ar_name);
+            formData.append('image', this.form.image, this.form.image.name);
+
+            axios.post('/api/category/' + this.categoryID, formData)
+                .then(res => {
+                    if (res.data.status == "success") {
+                        this.getCategory();
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Category has been updated successfully'
+                        })
+                    }
+                })
+                .catch(error => console.error(error)).catch(Toast.fire({
+                    icon: 'warning',
+                    title: 'Category has not been created successfully'
+                }));
+        },
+
+        categoryProduct(category) {
+            this.$router.push({
+                name: 'category_product',
+                params: { id: category.id, ar_name: category.name.ar, en_name: category.name.en },
             });
-            this.getCategory();
-          }
+        }
 
-        })
-        .catch(error => console.error(error));
     },
-
-    updateCategory() {
-      let id = this.$route.params.id
-      axios.patch('/api/category/' + id, this.form)
-        .then(res => {
-          console.log(data);
-          if (data.status == "success") {
-            console.log("Category has been updated Successfully");
-          }
-        })
-        .catch(error => console.error(error));
-    },
-
-    categoryProduct(category) {
-
-      this.$router.push({
-        name: 'category_product',
-        params: { id: category.id, ar_name: category.name.ar, en_name: category.name.en },
-      });
-    }
-
-  },
 
 };
 </script>
+<style  scoped>
+.loader {
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #3498db;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    animation: spin 2s linear infinite;
+}
 
-<style scoped >
-.image_preview {
-  width: 100px;
-  height: 100px;
-  display: block;
-  cursor: pointer;
-  background-size: contain;
-  background-position: center center;
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 </style>

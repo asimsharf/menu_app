@@ -1,0 +1,7 @@
+@font-face {
+    font-family: 'mikhak_medium';
+    font-style:  normal;
+    font-weight: 400;
+    src: url("../fonts/mikhak_medium.ttf") format("ttf"),
+         url("../fonts/changa_regular.ttf") format("ttf");
+  }

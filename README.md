@@ -1,3 +1,8 @@
-* https://6lb.menu/Relish_JoyOfTaste?lang=ar
-* git config --global http.version HTTP/1.1
-* git config --global http.version HTTP/2
+* php artisan cache:clear
+* php artisan optimize:clear
+* composer dump-autoload
+* composer clear-cache
+* composer clearcache
+* composer cc
+* npm cache clean --force
+* zip -r fileName.zip dirname | *

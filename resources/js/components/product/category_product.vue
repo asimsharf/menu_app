@@ -1,17 +1,17 @@
 <template>
     <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
+
         <div class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">{{this.$route.params.ar_name}}</h1>
+                        <h1 class="m-0">{{ this.$route.params.ar_name }}</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item">
                                 <router-link to="/category">
-                                    <a >Category</a>
+                                    <a>Category</a>
                                 </router-link>
                             </li>
                             <li class="breadcrumb-item active">Products</li>
@@ -20,12 +20,10 @@
                 </div>
             </div>
         </div>
-        <!-- /.content-header -->
 
-        <!-- Main content -->
         <div class="content">
             <div class="container-fluid">
-                <!-- ################################ -->
+
                 <div class="col-md-12">
                     <div class="card card-primary collapsed-card">
                         <div class="card-header">
@@ -78,14 +76,17 @@
                                         <div class="custom-file">
                                             <input type="file" class="custom-file-input" id="image"
                                                 @change="onFileSelected" />
-                                            <label class="custom-file-label" for="image"></label>
+                                            <label class="custom-file-label" for="image">
+                                                {{ form.image.name }}
+                                            </label>
                                         </div>
                                     </div>
 
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group">
 
-                                        <div class="image_preview"
-                                            :style="{ 'background-image': `url(${form.image})` }"></div>
+                                        <img :src="image_preview"
+                                            style="max-width: 100%;max-height:100%;height: 75px;width: 75px;">
+
                                     </div>
 
                                 </div>
@@ -96,78 +97,23 @@
                         </div>
                     </div>
                 </div>
-                <!-- ################################ -->
 
-                <!-- **************************** -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Products table</h3>
 
-                        <div class="card-tools">
-                            <ul class="pagination pagination-sm float-right">
-                                <li class="page-item"><a class="page-link" href="#">«</a></li>
-                                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                <li class="page-item"><a class="page-link" href="#">»</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- /.card-header -->
-                    <div class="card-body p-0">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 10px">#</th>
-                                    <th>Product name</th>
-                                    <th>Product Description</th>
-                                    <th style="width: 20%">Price</th>
-                                    <th style="width: 20%">Calories</th>
-                                    <th style="width: 20%">Category</th>
-                                    <th style="width: 80px">Image</th>
-                                    <th style="width: 80px">#</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="product in products" :key="product.id">
-                                    <td>{{ product.id }}</td>
-                                    <td>{{ product.name.ar }}</td>
-                                    <td>{{ product.description.ar }}</td>
-                                    <td>{{ product.price }} S.R</td>
-                                    <td>{{ product.calories }} kcl</td>
-                                    <td>
-                                        <span class="badge bg-success">{{ product.category.name.en }} </span>
-                                    </td>
-                                    <td><img class="direct-chat-img" :src="product.image" /></td>
-                                    <td>
-                                        <span class="badge bg-primary" @click="updateProduct(product.id)">
-                                            <i class="fas fa-edit"></i>
-                                        </span>
-                                        <div style="border-left:1px solid #000;height:15px"></div>
-                                        <span class="badge bg-danger" @click="deleteProduct(product.id)">
-                                            <i class="fas fa-trash"></i>
-                                        </span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- /.card-body -->
-                </div>
-                <!-- **************************** -->
+                <TableProducts table-name="Products" ref="getProductCall" />
+
             </div>
         </div>
-        <!-- /.content -->
+
     </div>
 </template>
 
 <script>
+import TableProducts from './table_products.vue';
 
 export default {
-    created() {
-       
-        this.getProduct();
-    },
+
+    components: { TableProducts },
+
     data() {
         return {
             form: {
@@ -177,11 +123,11 @@ export default {
                 en_description: null,
                 price: null,
                 calories: null,
-                image: null,
+                image: File,
             },
+            image_preview: null,
             errors: {},
 
-            products: [],
             categories: [],
 
         };
@@ -190,14 +136,27 @@ export default {
     methods: {
 
         onFileSelected(event) {
-            this.form.image = event.target.files[0];
+            let file = event.target.files[0];
+            let reader = new FileReader();
+
+            this.form.image = file;
+
+            if (file.size > 1048770) {
+                return;
+            } else {
+                reader.onload = event => {
+                    this.image_preview = event.target.result
+                };
+                reader.readAsDataURL(file);
+            }
+
         },
 
         postProduct() {
 
             const formData = new FormData();
 
-            formData.append('en_name', this.form.er_name);
+            formData.append('en_name', this.form.en_name);
             formData.append('ar_name', this.form.ar_name);
             formData.append('ar_description', this.form.ar_description);
             formData.append('en_description', this.form.en_description);
@@ -209,47 +168,20 @@ export default {
             axios.post("/api/product", formData)
                 .then(res => {
                     if (res.data.status == "success") {
-                        this.getProduct();
+
+                        this.$refs.getProductCall.getProduct();
+
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Product has been created successfully'
+                        })
+
                     }
                 })
-                .catch(error => console.error(error));
-        },
-
-        getProduct() {
-
-            axios.get("/api/category_product/" + this.$route.params.id)
-                .then(res => {
-                    if (res.data.status == "success") {
-                        this.products = res.data.data;
-                    }
-                })
-                .catch(error => console.error(error));
-        },
-
-        deleteProduct(id) {
-            axios.delete("/api/product/" + id)
-                .then(res => {
-                    if (res.data.status == "success") {
-                        this.products = this.products.filter((product) => {
-                            return product.id != id;
-                        });
-                        this.getProduct();
-                    }
-
-                })
-                .catch(error => console.error(error));
-        },
-
-        updateProduct() {
-            let id = this.$route.params.id
-            axios.patch('/api/product/' + id, this.form)
-                .then(res => {
-                    console.log(data);
-                    if (data.status == "success") {
-                        console.log("Product has been updated Successfully");
-                    }
-                })
-                .catch(error => console.error(error));
+                .catch(error => console.error(error)).catch(Toast.fire({
+                    icon: 'warning',
+                    title: 'Product has not been created successfully'
+                }));
         },
     },
 
@@ -257,12 +189,4 @@ export default {
 </script>
 
 <style scoped >
-.image_preview {
-    width: 100px;
-    height: 100px;
-    display: block;
-    cursor: pointer;
-    background-size: contain;
-    background-position: center center;
-}
 </style>
