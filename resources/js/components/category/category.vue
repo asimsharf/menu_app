@@ -66,7 +66,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group col-md-12">
 
-                                            <img :src="image_preview"
+                                            <img :src="imagePreview"
                                                 style="max-width: 100%;max-height:100%;height: 75px;width: 75px;">
 
                                         </div>
@@ -126,7 +126,7 @@
                                             <i class="fas fa-edit"></i>
                                         </span>
                                         <div style="border-left:1px solid #000;height:15px"></div>
-                                        <span class="badge bg-danger" @click="deleteCategory(category.id)">
+                                        <span class="badge bg-danger" @click="deleteCategory(category)">
                                             <i class="fas fa-trash"></i>
                                         </span>
                                     </td>
@@ -171,7 +171,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <img :src="image_preview"
+                                    <img :src="imagePreview"
                                         style="max-width: 100%;max-height:100%;height:100px;width: 100%;">
                                 </div>
                             </div>
@@ -190,8 +190,28 @@
 <script>
 
 export default {
-    created() {
-        this.getCategory();
+
+    computed:{
+        categories(){
+            return this.$store.state.categories;
+        },
+
+        category(){
+            return this.$store.state.category;
+        },
+
+        imagePreview(){
+            return this.$store.state.image_preview;
+        },
+
+        image(){
+            return this.$store.state.image;
+        }
+    },
+
+    mounted(){
+        this.$store.dispatch('getCategories');
+        this.$store.dispatch('getCategory', this.category_id);
     },
 
     data() {
@@ -201,9 +221,8 @@ export default {
                 ar_name: null,
                 image: File,
             },
-            image_preview: null,
+           
             errors: {},
-            categories: [],
             categoryID: null,
             isLoading: false,
 
@@ -211,6 +230,24 @@ export default {
     },
 
     methods: {
+        deleteCategory(category){
+            this.$store.dispatch('deleteCategory', category);
+        },
+
+        onFileSelected(event) {
+           this.$store.dispatch('onFileSelected', event);
+        },
+        
+        postCategory() {
+            const formData = new FormData();
+            formData.append('en_name', this.form.en_name);
+            formData.append('ar_name', this.form.ar_name);
+            formData.append('image', this.image, this.image.name);
+            console.log(formData)
+
+            this.$store.dispatch('postCategory',formData );
+        },
+
         setCategory(category) {
             this.categoryID = category.id;
             this.form.ar_name = category.name.ar;
@@ -218,80 +255,6 @@ export default {
             this.image_preview = category.image;
         },
 
-        onFileSelected(event) {
-            let file = event.target.files[0];
-            let reader = new FileReader();
-
-            this.form.image = file;
-
-            if (file.size > 1048770) {
-                return;
-            } else {
-                reader.onload = event => {
-                    this.image_preview = event.target.result
-                };
-                reader.readAsDataURL(file);
-            }
-
-        },
-
-        postCategory() {
-
-            const formData = new FormData();
-
-            formData.append('en_name', this.form.en_name);
-            formData.append('ar_name', this.form.ar_name);
-            formData.append('image', this.form.image, this.form.image.name);
-
-            axios.post("/api/category", formData)
-                .then(res => {
-                    if (res.data.status == "success") {
-                        this.getCategory();
-                        Toast.fire({
-                            icon: 'success',
-                            title: 'Category has been created successfully'
-                        })
-                    }
-                })
-                .catch(error => console.error(error)).catch(Toast.fire({
-                    icon: 'warning',
-                    title: 'Category has not been created successfully'
-                }));
-        },
-
-        getCategory() {
-            this.isLoading = true;
-            axios.get("/api/category")
-                .then(res => {
-                    this.isLoading = false;
-                    if (res.data.status == "success") {
-                        this.categories = res.data.data;
-                    }
-                })
-                .catch(error => console.error(error));
-        },
-
-        deleteCategory(id) {
-            axios.delete("/api/category/" + id)
-                .then(res => {
-                    if (res.data.status == "success") {
-                        this.categories = this.categories.filter((category) => {
-                            return category.id != id;
-                        });
-                        this.getCategory();
-
-                        Toast.fire({
-                            icon: 'success',
-                            title: 'Category has been removed successfully'
-                        })
-                    }
-
-                })
-                .catch(error => console.error(error)).catch(Toast.fire({
-                    icon: 'warning',
-                    title: 'Category has not been removed successfully'
-                }));
-        },
 
         updateCategory() {
 
@@ -304,7 +267,7 @@ export default {
             axios.post('/api/category/' + this.categoryID, formData)
                 .then(res => {
                     if (res.data.status == "success") {
-                        this.getCategory();
+                        this.$store.dispatch('getCategories');
                         Toast.fire({
                             icon: 'success',
                             title: 'Category has been updated successfully'
