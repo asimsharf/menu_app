@@ -1,11 +1,6 @@
 export const ON_FILE_SELECTED= (state,imageFile)=>{
-    state.image = imageFile;
+    state.image = imageFile.file;
     state.image_preview = imageFile.result;
-}
-
-
-export const POST_CATEGORIES= (state, formData)=>{
-    console.log(formData);
 }
 
 export const SET_CATEGORIES = (state, categories) => {

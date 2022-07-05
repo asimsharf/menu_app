@@ -15,14 +15,11 @@ export const onFileSelected = ({commit}, event) => {
     }
 }
 
-
 export const postCategory = ({ commit }, formData)=>{
-    console.log(formData)
-    
     axios.post("/api/category", formData)
     .then(res => {
         if (res.data.status == "success") {
-            commit('POST_CATEGORIES', res.data.data);
+            
         }
     }).catch(error => console.error(error));
 }
@@ -45,7 +42,6 @@ export const getCategory = ({ commit }, id) => {
     }).catch(error => console.error(error));
 }
 
-
 //remove category from API
 export const deleteCategory = ({commit}, category)=>{
     axios.delete(`/api/category/${category.id}`)
@@ -55,8 +51,6 @@ export const deleteCategory = ({commit}, category)=>{
         }
     }).catch(error => console.error(error));
 }
-
-
 
 //fetch all the products from the api
 export const getProducts = ({ commit }) => {

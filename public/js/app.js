@@ -19874,7 +19874,7 @@ __webpack_require__.r(__webpack_exports__);
     imagePreview: function imagePreview() {
       return this.$store.state.image_preview;
     },
-    image: function image() {
+    imageFile: function imageFile() {
       return this.$store.state.image;
     }
   },
@@ -19905,7 +19905,7 @@ __webpack_require__.r(__webpack_exports__);
       var formData = new FormData();
       formData.append('en_name', this.form.en_name);
       formData.append('ar_name', this.form.ar_name);
-      formData.append('image', this.image, this.image.name);
+      formData.append('image', this.imageFile, this.imageFile.name);
       console.log(formData);
       this.$store.dispatch('postCategory', formData);
     },
@@ -20613,7 +20613,7 @@ var _hoisted_49 = {
 var _hoisted_50 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "image"
-  }, "Product image", -1
+  }, "Category image", -1
   /* HOISTED */
   );
 });
@@ -20764,7 +20764,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, null, 32
   /* HYDRATE_EVENTS */
-  ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", _hoisted_52, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.form.image.name), 1
+  ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", _hoisted_52, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.imageFile.name), 1
   /* TEXT */
   )])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_53, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
     src: $options.imagePreview,
@@ -21633,11 +21633,8 @@ var onFileSelected = function onFileSelected(_ref, event) {
 };
 var postCategory = function postCategory(_ref2, formData) {
   var commit = _ref2.commit;
-  console.log(formData);
   axios__WEBPACK_IMPORTED_MODULE_0___default().post("/api/category", formData).then(function (res) {
-    if (res.data.status == "success") {
-      commit('POST_CATEGORIES', res.data.data);
-    }
+    if (res.data.status == "success") {}
   })["catch"](function (error) {
     return console.error(error);
   });
@@ -21766,18 +21763,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "DELETE_CATEGORY": () => (/* binding */ DELETE_CATEGORY),
 /* harmony export */   "ON_FILE_SELECTED": () => (/* binding */ ON_FILE_SELECTED),
-/* harmony export */   "POST_CATEGORIES": () => (/* binding */ POST_CATEGORIES),
 /* harmony export */   "SET_CATEGORIES": () => (/* binding */ SET_CATEGORIES),
 /* harmony export */   "SET_CATEGORY": () => (/* binding */ SET_CATEGORY),
 /* harmony export */   "SET_PRODUCT": () => (/* binding */ SET_PRODUCT),
 /* harmony export */   "SET_PRODUCTS": () => (/* binding */ SET_PRODUCTS)
 /* harmony export */ });
 var ON_FILE_SELECTED = function ON_FILE_SELECTED(state, imageFile) {
-  state.image = imageFile;
+  state.image = imageFile.file;
   state.image_preview = imageFile.result;
-};
-var POST_CATEGORIES = function POST_CATEGORIES(state, formData) {
-  console.log(formData);
 };
 var SET_CATEGORIES = function SET_CATEGORIES(state, categories) {
   state.categories = categories;

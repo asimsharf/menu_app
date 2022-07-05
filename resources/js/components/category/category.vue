@@ -161,12 +161,12 @@
                                     <input v-model="form.en_name" type="text" id="en_name" class="form-control" />
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="image">Product image</label>
+                                    <label for="image">Category image</label>
                                     <div class="custom-file">
                                         <input type="file" class="custom-file-input" id="image"
                                             @change="onFileSelected" />
                                         <label class="custom-file-label" for="image">
-                                            {{ form.image.name }}
+                                            {{ imageFile.name }}
                                         </label>
                                     </div>
                                 </div>
@@ -204,7 +204,7 @@ export default {
             return this.$store.state.image_preview;
         },
 
-        image(){
+        imageFile(){
             return this.$store.state.image;
         }
     },
@@ -242,10 +242,12 @@ export default {
             const formData = new FormData();
             formData.append('en_name', this.form.en_name);
             formData.append('ar_name', this.form.ar_name);
-            formData.append('image', this.image, this.image.name);
+            formData.append('image', this.imageFile, this.imageFile.name);
             console.log(formData)
 
             this.$store.dispatch('postCategory',formData );
+
+            
         },
 
         setCategory(category) {
